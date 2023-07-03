@@ -54,6 +54,35 @@ app.post(
   }
 );
 
+// Login and generate a JWT token
+app.post(
+  "/login",
+  body("username").notEmpty().withMessage("Username is required"),
+  body("password").notEmpty().withMessage("Password is required"),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    try {
+      const { username, password } = req.body;
+      const user = await User.findOne({ username });
+      if (!user) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+      const token = jwt.sign({ userId: user._id }, "secretKey");
+      res.json({ token });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Server Error" });
+    }
+  }
+);
+
 app.listen(PORT, () => {
   console.log(`Server start on port : ${PORT}`);
 });
