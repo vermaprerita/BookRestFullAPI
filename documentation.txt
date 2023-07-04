@@ -1,0 +1,66 @@
+API Endpoints:
+
+Register a new user:
+
+Endpoint: POST /register
+Request body:
+username: string (required, username of the user)
+password: string (required, password of the user)
+Response: 201 (User registered successfully)
+Login and generate a JWT token:
+
+Endpoint: POST /login
+Request body:
+username: string (required, username of the user)
+password: string (required, password of the user)
+Response: JWT token
+Create a book:
+
+Endpoint: POST /books
+Request body:
+title: string (required, title of the book)
+author: string (required, author of the book)
+genre: string (required, genre of the book)
+year: number (required, publication year of the book)
+Response: 201 (Created) with the created book object
+Read a single book:
+
+Endpoint: GET /books/:id
+Request parameter:
+id: string (required, ID of the book)
+Response: Book object
+Update a book:
+
+Endpoint: PUT /books/:id
+Request parameter:
+id: string (required, ID of the book)
+Request body:
+title: string (required, updated title of the book)
+author: string (required, updated author of the book)
+genre: string (required, updated genre of the book)
+year: number (required, updated publication year of the book)
+Response: Updated book object
+Delete a book:
+
+Endpoint: DELETE /books/:id
+Request parameter:
+id: string (required, ID of the book)
+Response: 200 (OK) with a message "Book deleted"
+List all books with pagination, sorting, and search:
+
+Endpoint: GET /books
+Request query parameters:
+page: number (optional, page number for pagination)
+limit: number (optional, number of books per page)
+sortBy: string (optional, field to sort the books by: title, author, genre, year)
+sortOrder: string (optional, sort order: asc, desc)
+search: string (optional, search term to filter books by title, author, or genre)
+Response: Paginated list of books with total count
+
+Instructions to run the application:
+
+At very first need to install npm using below command - 
+npm install
+
+node app.js
+will start your server on port no :3000

@@ -11,6 +11,7 @@ const User = require("./models/UserModel");
 const authMiddleware = require("./middlewares/checkUserAuthorization");
 const { body, validationResult } = require("express-validator");
 const db = require("./config/dbconfig");
+const rateLimit = require("express-rate-limit");
 
 // Middleware for parsing JSON data
 app.use(bodyParser.json());
@@ -21,6 +22,13 @@ app.use((err, req, res, next) => {
   res.status(500).send("Internal Server Error");
 });
 
+// Create a rate limiter middleware
+// const limiter = rateLimit({
+//   windowMs: 60 * 1000, // Time window in milliseconds
+//   max: 100, // Maximum number of requests allowed within the time window
+//   message: "Too many requests. Please try again later.",
+// });
+// app.use("/books", limiter);
 // Routes
 
 // Register a new user
