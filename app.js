@@ -179,6 +179,44 @@ app.delete("/books/:id", authMiddleware, async (req, res) => {
   }
 });
 
+// List all books with pagination and sorting
+app.get("/books", authMiddleware, async (req, res) => {
+  try {
+    const { page = 1, limit = 10, sort = "title" } = req.query;
+
+    // Parse page and limit parameters
+    const pageNumber = parseInt(page);
+    const limitNumber = parseInt(limit);
+
+    // Parse sort parameter and set default sort field
+    const sortField = ["title", "author", "genre", "year"].includes(sort)
+      ? sort
+      : "title";
+
+    // Calculate skip value for pagination
+    const skip = (pageNumber - 1) * limitNumber;
+
+    // Fetch books with pagination and sorting
+    const books = await Book.find()
+      .sort(sortField)
+      .skip(skip)
+      .limit(limitNumber);
+
+    // Count total number of books
+    const totalCount = await Book.countDocuments();
+
+    res.json({
+      data: books,
+      page: pageNumber,
+      limit: limitNumber,
+      totalCount,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server Error" });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server start on port : ${PORT}`);
 });
