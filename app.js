@@ -83,6 +83,55 @@ app.post(
   }
 );
 
+// Books API endpoints
+
+// Create a book
+app.post(
+  "/books",
+  authMiddleware,
+  body("title").notEmpty().withMessage("Title is required"),
+  body("author").notEmpty().withMessage("Author is required"),
+  body("genre").notEmpty().withMessage("Genre is required"),
+  body("year")
+    .notEmpty()
+    .withMessage("Year is required")
+    .isNumeric()
+    .withMessage("Year must be a number"),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    try {
+      const { title, author, genre, year } = req.body;
+      const book = new Book({
+        title,
+        author,
+        genre,
+        year,
+      });
+      await book.save();
+      res.status(201).json(book);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Server Error" });
+    }
+  }
+);
+
+// Read a single book
+app.get("/books/:id", authMiddleware, async (req, res) => {
+  try {
+    const book = await Book.findById(req.params.id);
+    if (!book) {
+      return res.status(404).json({ error: "Book not found" });
+    }
+    res.json(book);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server Error" });
+  }
+});
 app.listen(PORT, () => {
   console.log(`Server start on port : ${PORT}`);
 });
