@@ -179,10 +179,16 @@ app.delete("/books/:id", authMiddleware, async (req, res) => {
   }
 });
 
-// List all books with pagination and sorting
+// List all books with pagination, sorting, and search
 app.get("/books", authMiddleware, async (req, res) => {
   try {
-    const { page, limit, sortBy = "title", sortOrder = "asc" } = req.query;
+    const {
+      page,
+      limit,
+      sortBy = "title",
+      sortOrder = "asc",
+      search,
+    } = req.query;
 
     // Parse page and limit parameters
     const pageNumber = parseInt(page);
@@ -196,18 +202,29 @@ app.get("/books", authMiddleware, async (req, res) => {
     // Calculate skip value for pagination
     const skip = (pageNumber - 1) * limitNumber;
 
+    // Build the search query
+    const searchQuery = {};
+    if (search) {
+      const searchRegex = new RegExp(search, "i");
+      searchQuery["$or"] = [
+        { title: searchRegex },
+        { author: searchRegex },
+        { genre: searchRegex },
+      ];
+    }
+
     // Determine the sort order
     const sortOptions = {};
     sortOptions[sortField] = sortOrder === "desc" ? -1 : 1;
 
-    // Fetch books with pagination and sorting
-    const books = await Book.find()
+    // Fetch books with pagination, sorting, and search
+    const books = await Book.find(searchQuery)
       .sort(sortOptions)
       .skip(skip)
       .limit(limitNumber);
 
     // Count total number of books
-    const totalCount = await Book.countDocuments();
+    const totalCount = await Book.countDocuments(searchQuery);
 
     res.json({
       data: books,
