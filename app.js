@@ -1,5 +1,4 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -10,7 +9,7 @@ const Book = require("./models/BooksModel");
 const User = require("./models/UserModel");
 const authMiddleware = require("./middlewares/checkUserAuthorization");
 const { body, validationResult } = require("express-validator");
-const db = require("./config/dbconfig");
+const connectDB = require("./config/dbconfig");
 const rateLimit = require("express-rate-limit");
 
 // Middleware for parsing JSON data
