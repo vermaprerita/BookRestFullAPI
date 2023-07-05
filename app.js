@@ -245,6 +245,4 @@ app.get("/books", authMiddleware, async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server start on port : ${PORT}`);
-});
+module.exports = app;
